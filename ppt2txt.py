@@ -5,20 +5,19 @@ from win32com.client import Dispatch
 if __name__ == '__main__':
     ppt = win32com.client.Dispatch('PowerPoint.Application')
 
-    ppt.Visible = 1
-    pptSel = ppt.Presentations.Open("F:\ppt\\pptword2.pptx", WithWindow=False)
+    objPres = ppt.Presentations.Open("F:\ppt\\pptword2.pptx", WithWindow=False)
 
-    # 顺序没有稳定
-    slide_count = pptSel.Slides.Count
-    for i in range(1, slide_count + 1):
-        shape_count = pptSel.Slides(i).Shapes.Count
-        # print("组件数量："+str(shape_count))
-        for j in range(1, shape_count + 1):
-            shape = pptSel.Slides(i).Shapes(j)
-            if pptSel.Slides(i).Shapes(j).HasTextFrame:
-                s = pptSel.Slides(i).Shapes(j).TextFrame2.TextRange.Text
+    listSlides = objPres.Slides
 
-                # 要取掉 \r
+    for slide in listSlides:
+        listShape = slide.Shapes
+        listShape = sorted(listShape, key=lambda x: (x.Top))
+        for shape in listShape:
+            # print(shape.Left)
+            # print(shape.Top)
+            if shape.HasTextFrame:
+                s = shape.TextFrame2.TextRange.Text
+                # 要去掉 \r
                 print(s.replace("\r", " "))
 
     ppt.Quit()
