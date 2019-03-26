@@ -1,7 +1,6 @@
 import win32com
 from win32com.client import Dispatch
 
-# 文本不完整
 if __name__ == '__main__':
     ppt = win32com.client.Dispatch('PowerPoint.Application')
 

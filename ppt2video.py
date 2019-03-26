@@ -92,7 +92,12 @@ if __name__ == '__main__':
             # print("时间" + str(time.strftime("%Y-%m-%d %H:%M:%S" ,time.localtime())))
             # 指定动画的持续时间
             # duration = 5
-            effect.Timing.Duration = 2
+            # effect.Timing.Duration = 2
+
+
+
+
+
 
 
             # 幻灯片播放模式
