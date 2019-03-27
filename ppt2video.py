@@ -88,8 +88,9 @@ if __name__ == '__main__':
         video_shape.AnimationSettings.PlaySettings.LoopUntilStopped = False
 
         print("排序前，动画循序：AnimationOrder :"+ str(video_shape.AnimationSettings.AnimationOrder))
-        video_shape.AnimationSettings.AnimationOrder = animation_order
+        # video_shape.AnimationSettings.AnimationOrder = animation_order
         print("排序后，动画循序：AnimationOrder :" + str(video_shape.AnimationSettings.AnimationOrder))
+        # animation_order+=1
 
         video_shape.AnimationSettings.AdvanceMode = 2
         video_shape.AnimationSettings.AdvanceTime = 0
@@ -108,11 +109,13 @@ if __name__ == '__main__':
             effect = sequence.Item(j)
 
             effect_shape = effect.Shape
-            effect_shape.AnimationSettings.AnimationOrder = animation_order
+            print("动画{},AnimationOrder".format(j)+str(effect_shape.AnimationSettings.AnimationOrder))
 
             # 插入本序列音频文件
             video_shape = add_voice("F:\\ppt\\audio\\幻灯片{}.JPG.wav".format(i))
-            video_shape.AnimationSettings.AnimationOrder = animation_order
+            # video_shape.AnimationSettings.AnimationOrder = animation_order
+            print("动画声音{},AnimationOrder".format(j)+str(video_shape.AnimationSettings.AnimationOrder))
+
             try:
                 effect_shape.AnimationSettings
             except AttributeError as e:
@@ -147,7 +150,7 @@ if __name__ == '__main__':
         # 设置幻灯片在经过指定时间后是否自动切换 -1 表示 True
         slide.SlideShowTransition.AdvanceOnTime = True
         # 设置以秒为单位的时间长度，该段时间过后，指定的幻灯片将会切换
-        slide.SlideShowTransition.AdvanceTime = slide_time
+        slide.SlideShowTransition.AdvanceTime = 10
         print("第 %d 帧动画延迟：%d" % (i, slide_time))
         # 测试效果：可以实现指定幻灯片按指定时长播放
         # -----------------------------------------------------------------------------
