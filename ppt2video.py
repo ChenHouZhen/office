@@ -62,7 +62,7 @@ def add_voice(voice_path):
 if __name__ == '__main__':
     ppt = win32com.client.Dispatch('PowerPoint.Application')
     # MsoTriState.msoTrue        1
-    objPres = ppt.Presentations.Open("F:\ppt\\1234567.pptx", WithWindow=True)
+    objPres = ppt.Presentations.Open("F:\ppt\\12345678.pptx", WithWindow=True)
 
     # Presentations.Slides 返回PPT的所有幻灯片集合
     listSlides = objPres.Slides
@@ -80,7 +80,6 @@ if __name__ == '__main__':
 
         len_effect = sequence.Count
 
-        animation_order = 1
 
         # 插入本序列音频文件
         video_shape = add_voice("F:\\ppt\\audio\\幻灯片{}.JPG.wav".format(i))
@@ -88,9 +87,9 @@ if __name__ == '__main__':
         video_shape.AnimationSettings.PlaySettings.LoopUntilStopped = False
 
         print("排序前，动画循序：AnimationOrder :"+ str(video_shape.AnimationSettings.AnimationOrder))
-        # video_shape.AnimationSettings.AnimationOrder = animation_order
+        video_shape.AnimationSettings.AnimationOrder = 0
         print("排序后，动画循序：AnimationOrder :" + str(video_shape.AnimationSettings.AnimationOrder))
-        # animation_order+=1
+
 
         video_shape.AnimationSettings.AdvanceMode = 2
         video_shape.AnimationSettings.AdvanceTime = 0
@@ -102,7 +101,7 @@ if __name__ == '__main__':
         slide_time = 2
 
         for j in range(1, len_effect+1):
-            # animation_order += 1
+            animation_order = 1
             print("============== 进入动画序列 ===================")
             print("============== 进入序列 帧：{} 动画：{}===================".format(i, j))
 
@@ -110,10 +109,12 @@ if __name__ == '__main__':
 
             effect_shape = effect.Shape
             print("动画{},AnimationOrder".format(j)+str(effect_shape.AnimationSettings.AnimationOrder))
-
+            effect_shape.AnimationSettings.AnimationOrder = 1
+            animation_order += 1
             # 插入本序列音频文件
             video_shape = add_voice("F:\\ppt\\audio\\幻灯片{}.JPG.wav".format(i))
-            # video_shape.AnimationSettings.AnimationOrder = animation_order
+            video_shape.AnimationSettings.AnimationOrder = 2
+            animation_order += 1
             print("动画声音{},AnimationOrder".format(j)+str(video_shape.AnimationSettings.AnimationOrder))
 
             try:
@@ -135,7 +136,7 @@ if __name__ == '__main__':
             #     print("============= 音频 跳过 ================")
             #     continue
             # print("动画名称：" + effect.DisplayName)
-            animationSettings.AdvanceTime = 5
+            animationSettings.AdvanceTime = 3
             # effect.Shape.AnimationSettings.TextLevelEffect = 16
             # effect.Shape.AnimationSettings.Animate = True
             # print("时间" + str(time.strftime("%Y-%m-%d %H:%M:%S" ,time.localtime())))
