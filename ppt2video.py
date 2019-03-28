@@ -3,6 +3,11 @@ from win32com.client import Dispatch
 import math
 
 
+def read_ppt(shape):
+    print("=================== shape.AnimationSettings.AnimationOrder :{}  ======================".format(shape.AnimationSettings.AnimationOrder))
+    print("=================== shape.Name:{} ======================".format(shape.Name))
+    print("=================== shape.Id:{} ======================".format(shape.Id))
+
 def add_voice(voice_path):
     print("==============  插入音频，文件名：{}==============".format(voice_path))
 
@@ -35,7 +40,7 @@ def add_voice(voice_path):
 
     # -----------------下面这两句不一定需要 下面两句 对应： 动画->开始 ----------------
     shape.AnimationSettings.AdvanceMode = 2
-    shape.AnimationSettings.AdvanceTime = 0
+    shape.AnimationSettings.AdvanceTime = 0.0
     # ---------------------------------------------------
 
     # 在指定媒体剪辑播放结束前是否暂停幻灯片放映
@@ -62,7 +67,7 @@ def add_voice(voice_path):
 if __name__ == '__main__':
     ppt = win32com.client.Dispatch('PowerPoint.Application')
     # MsoTriState.msoTrue        1
-    objPres = ppt.Presentations.Open("F:\ppt\\12345678.pptx", WithWindow=True)
+    objPres = ppt.Presentations.Open("F:\ppt\\1234567891.pptx", WithWindow=True)
 
     # Presentations.Slides 返回PPT的所有幻灯片集合
     listSlides = objPres.Slides
@@ -82,7 +87,7 @@ if __name__ == '__main__':
 
 
         # 插入本序列音频文件
-        video_shape = add_voice("F:\\ppt\\audio\\幻灯片{}.JPG.wav".format(i))
+        video_shape = add_voice("F:\\ppt\\audio\\幻灯片3.JPG.wav")
         video_shape.AnimationSettings.PlaySettings.PlayOnEntry = True
         video_shape.AnimationSettings.PlaySettings.LoopUntilStopped = False
 
@@ -90,9 +95,9 @@ if __name__ == '__main__':
         video_shape.AnimationSettings.AnimationOrder = 0
         print("排序后，动画循序：AnimationOrder :" + str(video_shape.AnimationSettings.AnimationOrder))
 
-
         video_shape.AnimationSettings.AdvanceMode = 2
-        video_shape.AnimationSettings.AdvanceTime = 0
+        video_shape.AnimationSettings.AdvanceTime = 0.0
+
         video_shape_id = video_shape.Id
 
         print("插入的音频id "+str(video_shape_id))
@@ -109,11 +114,12 @@ if __name__ == '__main__':
 
             effect_shape = effect.Shape
             print("动画{},AnimationOrder".format(j)+str(effect_shape.AnimationSettings.AnimationOrder))
-            effect_shape.AnimationSettings.AnimationOrder = 1
+            # effect_shape.AnimationSettings.AnimationOrder = 1
+            print("排序后，字体动画循序：AnimationOrder :" + str( effect_shape.AnimationSettings.AnimationOrder))
             animation_order += 1
             # 插入本序列音频文件
-            video_shape = add_voice("F:\\ppt\\audio\\幻灯片{}.JPG.wav".format(i))
-            video_shape.AnimationSettings.AnimationOrder = 2
+            video_shape = add_voice("F:\\ppt\\audio\\幻灯片3.JPG.wav")
+            # video_shape.AnimationSettings.AnimationOrder = 2
             animation_order += 1
             print("动画声音{},AnimationOrder".format(j)+str(video_shape.AnimationSettings.AnimationOrder))
 
@@ -136,14 +142,18 @@ if __name__ == '__main__':
             #     print("============= 音频 跳过 ================")
             #     continue
             # print("动画名称：" + effect.DisplayName)
-            animationSettings.AdvanceTime = 3
+
+            animationSettings.AdvanceTime = 10
+
+            # effect.Timing.Duration = 40
+
             # effect.Shape.AnimationSettings.TextLevelEffect = 16
             # effect.Shape.AnimationSettings.Animate = True
             # print("时间" + str(time.strftime("%Y-%m-%d %H:%M:%S" ,time.localtime())))
             # 指定动画的持续时间
             # duration = 5
             # effect.Timing.Duration = 2
-            i += 1
+        i += 1
 
         # --------- 以下设置 可以指定幻灯片的播放效果，如指定时长自动播放 --------------------
         # 一下
@@ -151,12 +161,32 @@ if __name__ == '__main__':
         # 设置幻灯片在经过指定时间后是否自动切换 -1 表示 True
         slide.SlideShowTransition.AdvanceOnTime = True
         # 设置以秒为单位的时间长度，该段时间过后，指定的幻灯片将会切换
-        slide.SlideShowTransition.AdvanceTime = 10
+        # slide.SlideShowTransition.AdvanceTime = 10
+
         print("第 %d 帧动画延迟：%d" % (i, slide_time))
         # 测试效果：可以实现指定幻灯片按指定时长播放
         # -----------------------------------------------------------------------------
 
 
+    for slide in listSlides:
+
+        sequence = slide.TimeLine.MainSequence
+
+        len_effect = sequence.Count
+
+        for j in range(1, len_effect + 1):
+            effect = sequence.Item(j)
+            effect_shape = effect.Shape
+            print("=================== effect_shape.AnimationSettings.AnimationOrder :{}  ======================".format(effect_shape.AnimationSettings.AnimationOrder))
+            print("=================== effect_shape.Name:{} ======================".format(effect_shape.Name))
+            print("=================== effect_shape.Id:{} ======================".format(effect_shape.Id))
+            print("=================== effect.Timing.Duration:{} ======================".format(effect.Timing.Duration))
+            print("===================  ======================")
+            print("===================  ======================")
+            print("===================  ======================")
+            print("===================  ======================")
+            print()
+            print()
 
     # 幻灯片播放模式
     # objPres.SlideShowSettings.RangeType = 2
@@ -191,4 +221,4 @@ if __name__ == '__main__':
     # 第四个参数 幻灯片的分辨率。
     # 第五个参数 每秒的帧数。
     # 第六个参数 幻灯片的质量级别
-    # objPres.CreateVideo("F:\ppt\\123456.mp4", True, 5, 320, 24, 60)
+    objPres.CreateVideo("F:\ppt\\123456.mp4", True, 5, 320, 24, 60)
