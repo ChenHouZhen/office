@@ -56,7 +56,7 @@ def add_voice(sequence,voice_path, order):
 if __name__ == '__main__':
     ppt = win32com.client.Dispatch('PowerPoint.Application')
     # MsoTriState.msoTrue        1
-    objPres = ppt.Presentations.Open("F:\ppt\\22.pptx", WithWindow=True)
+    objPres = ppt.Presentations.Open("F:\ppt\\11.pptx", WithWindow=True)
 
     # Presentations.Slides 返回PPT的所有幻灯片集合
     listSlides = objPres.Slides
@@ -80,11 +80,6 @@ if __name__ == '__main__':
 
         print("========================== 运动序列总长度：{}".format(len_effect))
 
-        # 插入本序列音频文件
-        first_shape = add_voice(sequence, "F:\\ppt\\audio\\幻灯片3.JPG.wav", 1)
-        list_voice.append(first_shape)
-
-
         for effect_num in range(1, len_effect+1):
             effect = sequence.Item(effect_num)
             effect_shape = effect.Shape
@@ -94,44 +89,36 @@ if __name__ == '__main__':
             print("============== 当前操作的 shape Name:{} ===================".format(effect_shape.Name))
             print("============== 当前操作的 shape AnimationOrder:{} ===================".format(str(animationSettings.AnimationOrder)))
             print()
-
-            # 插入本序列音频文件
-            two_shape = add_voice(sequence, "F:\\ppt\\audio\\幻灯片3.JPG.wav", slide_num + 1)
-            list_voice.append(two_shape)
-
             # 指示指定形状的动画是仅在被单击时切换还是在经过指定时间后自动切换
             # 1 ：单击时播放
             # 2 ：在指定的一段时间后自动。
             animationSettings.AdvanceMode = 2
-            animationSettings.AdvanceTime = 0.0
+            animationSettings.AdvanceTime = 50.0
 
-        print("========================== 插入视频后，总动画长度为：{}".format(str(sequence.Count)) )
-
-        for effect_num in range(len_effect+1, sequence.Count + 1):
-            print("========================== 循环设置语音动画时间,当前语语音为：{}".format(effect_num))
-            effect = sequence.Item(effect_num)
-            # 设置动画时间
-            effect.Timing.TriggerType = 3
-            print("========================== 原先音頻 duration : {}".format(effect.Timing.Duration))
-            # effect.Timing.Duration = 50.00
-            print("========================== 後來音頻 duration : {}".format(effect.Timing.Duration))
+            # 插入本序列音频文件
+            # two_shape = add_voice(sequence, "F:\\ppt\\audio\\幻灯片3.JPG.wav", slide_num + 1)
+            # list_voice.append(two_shape)
+            effect_shape.AnimationSettings.SoundEffect.ImportFromFile("F:\\ppt\\audio\\幻灯片3.JPG.wav")
 
 
+        # 插入本序列音频文件
+        first_shape = add_voice(sequence, "F:\\ppt\\audio\\幻灯片3.JPG.wav", 1)
+        first_shape.AnimationSettings.AnimationOrder = 1
         # --------- 以下设置 可以指定幻灯片的播放效果，如指定时长自动播放 --------------------
         # 一下
         # 設置幻灯片的切换效果
         # 设置幻灯片在经过指定时间后是否自动切换 -1 表示 True
         slide.SlideShowTransition.AdvanceOnTime = True
         # 设置以秒为单位的时间长度，该段时间过后，指定的幻灯片将会切换
-        slide.SlideShowTransition.AdvanceTime = 0.0
+        # slide.SlideShowTransition.AdvanceTime = 0.0
         # -----------------------------------------------------------------------------
 
         slide_num += 1
 
-        i = 1
-        for v in list_voice:
-            v.AnimationSettings.AnimationOrder = i
-            i += 2
+        # i = 1
+        # for v in list_voice:
+        #     v.AnimationSettings.AnimationOrder = i
+        #     i += 2
 
     print()
     print()
@@ -155,6 +142,5 @@ if __name__ == '__main__':
             print("===================  ======================")
             print("===================  ======================")
             print()
-            print()
 
-    # objPres.CreateVideo("F:\ppt\\12345678.mp4", True, 5, 320, 24, 60)
+    objPres.CreateVideo("F:\ppt\\12345678.mp4", True, 5, 320, 24, 60)
