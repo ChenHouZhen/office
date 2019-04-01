@@ -110,7 +110,7 @@ if __name__ == '__main__':
             # 1 ：单击时播放
             # 2 ：在指定的一段时间后自动。
             animationSettings.AdvanceMode = 2
-            animationSettings.AdvanceTime = math.ceil(pre_audio.MediaFormat.Length/100) + 1
+            animationSettings.AdvanceTime = math.ceil(pre_audio.MediaFormat.Length/1000) + 1
             # effect.Timing.Duration =50
             # 插入本序列音频文件
             # effect_shape.AnimationSettings.SoundEffect.ImportFromFile("F:\\ppt\\audio\\幻灯片{}.JPG.wav".format(source_num))
@@ -131,15 +131,16 @@ if __name__ == '__main__':
         # 序列长度
         now_len_effect = sequence.Count
 
-        order = 0
+        order = 1
         # 排序
-        for i_audio in range(len_effect,  now_len_effect + 1):
-            print("================== order：{}".format(order))
-            effect = sequence.Item(i_audio)
-            effect_shape = effect.Shape
-            animationSettings = effect_shape.AnimationSettings
-            animationSettings.AnimationOrder = order
-            order += 2
+        if len_effect !=0:
+            for i_audio in range(len_effect,  now_len_effect + 1):
+                print("================== order：{}".format(order))
+                effect = sequence.Item(i_audio)
+                effect_shape = effect.Shape
+                animationSettings = effect_shape.AnimationSettings
+                animationSettings.AnimationOrder = order
+                order += 2
 
 
 
