@@ -1,8 +1,8 @@
 import win32com
 from win32com.client import Dispatch
+import math
 
-
-def add_voice(sequence,voice_path, order):
+def add_voice(sequence,voice_path):
     print("========================== 插入音频,音频文件名为：{}".format(voice_path))
 
     # 插入媒体文件
@@ -24,8 +24,8 @@ def add_voice(sequence,voice_path, order):
 
     # shape.AnimationSettings.PlaySettings.LoopUntilStopped = False
 
-    # shape.AnimationSettings.AdvanceMode = 2
-    # shape.AnimationSettings.AdvanceTime = 0.0
+    shape.AnimationSettings.AdvanceMode = 2
+    shape.AnimationSettings.AdvanceTime = 0.0
 
     # 幻灯片放映期间指定媒体剪辑在不播放时是否隐藏。幻灯片放映过程中指定媒体隐藏。
     # shape.AnimationSettings.PlaySettings.HideWhileNotPlaying = False
@@ -64,7 +64,9 @@ if __name__ == '__main__':
     print("========================== 幻灯片总长度：{}".format(len(listSlides)))
     print("========================== 开始循环幻灯片")
 
+    source_num = 1
     slide_num = 1
+
     for slide in listSlides:
 
         # 运动序列
@@ -72,15 +74,25 @@ if __name__ == '__main__':
         # Effect 对象代表动画序列的计时属性。
         sequence = slide.TimeLine.MainSequence
 
-        list_voice = []
+        # 序列长度
         len_effect = sequence.Count
 
-        # for j in range(1, len_effect + 1):
-        #     new_sequence.append(sequence.Item(j))
+        # 该页 PPT 音频
+        audios = []
+
+        for i_effect in range(1, len_effect+2):
+            # 读音频
+            audios.append('F:\\ppt\\audio\\幻灯片{}.JPG.wav'.format(i_effect))
 
         print("========================== 运动序列总长度：{}".format(len_effect))
+        print("========================== 预备插入的音频总长度：{}".format(len(audios)))
 
+        # 插入本序列音频文件
+        first_audio_shape = add_voice(sequence, audios[0])
+        # first_shape.AnimationSettings.AnimationOrder = 1
+        pre_audio = first_audio_shape
         for effect_num in range(1, len_effect+1):
+
             effect = sequence.Item(effect_num)
             effect_shape = effect.Shape
             animationSettings = effect_shape.AnimationSettings
@@ -89,21 +101,21 @@ if __name__ == '__main__':
             print("============== 当前操作的 shape Name:{} ===================".format(effect_shape.Name))
             print("============== 当前操作的 shape AnimationOrder:{} ===================".format(str(animationSettings.AnimationOrder)))
             print()
+
+
+            # 插入本序列音频文件
+            audio_shape = add_voice(sequence, audios[effect_num])
+
             # 指示指定形状的动画是仅在被单击时切换还是在经过指定时间后自动切换
             # 1 ：单击时播放
             # 2 ：在指定的一段时间后自动。
             animationSettings.AdvanceMode = 2
-            animationSettings.AdvanceTime = 50.0
-
+            animationSettings.AdvanceTime = math.ceil(pre_audio.MediaFormat.Length/100) + 1
+            # effect.Timing.Duration =50
             # 插入本序列音频文件
-            # two_shape = add_voice(sequence, "F:\\ppt\\audio\\幻灯片3.JPG.wav", slide_num + 1)
-            # list_voice.append(two_shape)
-            effect_shape.AnimationSettings.SoundEffect.ImportFromFile("F:\\ppt\\audio\\幻灯片3.JPG.wav")
+            # effect_shape.AnimationSettings.SoundEffect.ImportFromFile("F:\\ppt\\audio\\幻灯片{}.JPG.wav".format(source_num))
+            pre_audio = audio_shape
 
-
-        # 插入本序列音频文件
-        first_shape = add_voice(sequence, "F:\\ppt\\audio\\幻灯片3.JPG.wav", 1)
-        first_shape.AnimationSettings.AnimationOrder = 1
         # --------- 以下设置 可以指定幻灯片的播放效果，如指定时长自动播放 --------------------
         # 一下
         # 設置幻灯片的切换效果
@@ -114,13 +126,23 @@ if __name__ == '__main__':
         # -----------------------------------------------------------------------------
 
         slide_num += 1
+        source_num += 1
 
-        # i = 1
-        # for v in list_voice:
-        #     v.AnimationSettings.AnimationOrder = i
-        #     i += 2
+        # 序列长度
+        now_len_effect = sequence.Count
 
-    print()
+        order = 0
+        # 排序
+        for i_audio in range(len_effect,  now_len_effect + 1):
+            print("================== order：{}".format(order))
+            effect = sequence.Item(i_audio)
+            effect_shape = effect.Shape
+            animationSettings = effect_shape.AnimationSettings
+            animationSettings.AnimationOrder = order
+            order += 2
+
+
+
     print()
     print("=================== 打印结果验证  ======================")
     for slide in listSlides:
@@ -143,4 +165,4 @@ if __name__ == '__main__':
             print("===================  ======================")
             print()
 
-    objPres.CreateVideo("F:\ppt\\12345678.mp4", True, 5, 320, 24, 60)
+    # objPres.CreateVideo("F:\ppt\\12345678.mp4", True, 5, 320, 24, 60)
